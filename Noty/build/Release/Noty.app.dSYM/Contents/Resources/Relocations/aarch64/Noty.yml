@@ -1,0 +1,5 @@
+---
+triple:          'arm64-apple-darwin'
+binary-path:     '/Users/hxl/big_disk/Noty/Noty/build/Release/Noty.app/Contents/MacOS/Noty'
+relocations:     []
+...

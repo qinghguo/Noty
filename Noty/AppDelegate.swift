@@ -10,67 +10,13 @@ class AppDelegate: NSObject, NSApplicationDelegate, GlobalHotkeyDelegate {
     private var menuItems: [String: [NSMenuItem]] = [:]
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        setupMainMenu()
         setupMenuBar()
         hotkeyManager = GlobalHotkeyManager(delegate: self)
         hotkeyManager.startMonitoring()
         setupShortcutChangeObserver()
         updateMenuBarShortcuts()
         createNewNote()
-    }
-
-    func setupMainMenu() {
-        let mainMenu = NSMenu()
-
-        let appMenuItem = NSMenuItem()
-        let appMenu = NSMenu()
-        let settingsItem = NSMenuItem(
-            title: "设置...",
-            action: #selector(openSettings),
-            keyEquivalent: ","
-        )
-        settingsItem.keyEquivalentModifierMask = .command
-        settingsItem.target = self
-        appMenu.addItem(settingsItem)
-        registerMenuItem(settingsItem, for: "settings")
-
-        let quitItem = NSMenuItem(
-            title: "退出 Noty",
-            action: #selector(quitApp),
-            keyEquivalent: "q"
-        )
-        quitItem.keyEquivalentModifierMask = .command
-        quitItem.target = self
-        appMenu.addItem(quitItem)
-        appMenuItem.submenu = appMenu
-        mainMenu.addItem(appMenuItem)
-
-        let fileMenuItem = NSMenuItem()
-        let fileMenu = NSMenu(title: "文件")
-
-        let newNoteItem = NSMenuItem(
-            title: "新建",
-            action: #selector(createNewNote),
-            keyEquivalent: "n"
-        )
-        newNoteItem.keyEquivalentModifierMask = .command
-        newNoteItem.target = self
-        fileMenu.addItem(newNoteItem)
-        registerMenuItem(newNoteItem, for: "newNote")
-
-        let closeWindowItem = NSMenuItem(
-            title: "关闭窗口",
-            action: #selector(closeKeyWindow),
-            keyEquivalent: "w"
-        )
-        closeWindowItem.keyEquivalentModifierMask = .command
-        closeWindowItem.target = self
-        fileMenu.addItem(closeWindowItem)
-
-        fileMenuItem.submenu = fileMenu
-        mainMenu.addItem(fileMenuItem)
-
-        NSApp.mainMenu = mainMenu
+        setupTextEditingShortcuts()
     }
 
     func setupMenuBar() {
@@ -128,8 +74,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, GlobalHotkeyDelegate {
         let quitItem = NSMenuItem(
             title: "退出",
             action: #selector(quitApp),
-            keyEquivalent: ""
+            keyEquivalent: "q"
         )
+        quitItem.keyEquivalentModifierMask = .command
         quitItem.target = self
         menu.addItem(quitItem)
 
@@ -322,7 +269,44 @@ class AppDelegate: NSObject, NSApplicationDelegate, GlobalHotkeyDelegate {
         NSApplication.shared.terminate(nil)
     }
 
-
+    func setupTextEditingShortcuts() {
+            // 注意闭包这里加上了 [weak self]，允许调用 AppDelegate 里的方法
+            NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
+                let modifierFlags = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
+                
+                // 只拦截带有 Command 键的组合
+                guard modifierFlags.contains(.command) else { return event }
+                
+                let hasShift = modifierFlags.contains(.shift)
+                let characters = event.charactersIgnoringModifiers?.lowercased()
+                
+                // 🌟 新增逻辑：强行拦截 Cmd + Q 退出软件
+                if characters == "q" && !hasShift {
+                    self?.quitApp()
+                    return nil // 返回 nil 代表彻底拦截，系统不会再发出“咚”的报错声
+                }
+                
+                var selector: Selector?
+                
+                // 处理基础的文本编辑操作
+                switch characters {
+                case "x": selector = Selector(("cut:"))
+                case "c": selector = Selector(("copy:"))
+                case "v": selector = Selector(("paste:"))
+                case "a": selector = Selector(("selectAll:"))
+                case "z": selector = hasShift ? Selector(("redo:")) : Selector(("undo:"))
+                default: break
+                }
+                
+                if let action = selector {
+                    if NSApp.sendAction(action, to: nil, from: nil) {
+                        return nil
+                    }
+                }
+                
+                return event
+            }
+        }
 
     private func findFrontmostStickyWindow() -> NSWindow? {
         let stickyWindows = windowControllers.compactMap { $0.window }

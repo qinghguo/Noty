@@ -18,7 +18,7 @@
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		C98CC0082FBADB2E00ACE269 /* Noty */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = Noty;
+			path = "";
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
