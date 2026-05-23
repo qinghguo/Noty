@@ -15,5 +15,7 @@
 报错：
 
 <img width="494" height="464" alt="image" src="https://github.com/user-attachments/assets/3ffbc68f-9e24-490d-881d-1ea1dd6f1da0" />
+
 设置-隐私与安全-最底下安全-允许打开软件
+
 system settings -- privacy&security -- security -- allow applications from -- open anyway
