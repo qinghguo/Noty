@@ -9,8 +9,10 @@
 4. 快捷键”Option + /“可以把当前便签置顶于所有窗口之上，重复按键取消置顶；
 
 5. Command + W 关闭展开状态的便签，Command + Q 退出软件。
+   
 
-<img width="2176" height="1312" alt="preview" src="https://github.com/user-attachments/assets/c181c02d-e5ff-447b-b1af-6ac32531c513" />
+<img width="2308" height="1686" alt="f5d32512-d12a-4672-9e19-a95b95d663f9" src="https://github.com/user-attachments/assets/b3b379ae-f8cb-4639-9306-ac8b96f648b0" />
+
 
 
 允许打开应用：
